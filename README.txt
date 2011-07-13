@@ -37,3 +37,14 @@ subsequently been modified) so you can re-upgrade them. This may allow you to
 recover from a buggy upgrade.
 
 9. Finally, you can still use the extract test-cases script to help report bugs.
+
+
+How to install:
+
+To install using git, type this command in the root of your Moodle install
+    git clone git://github.com/timhunt/moodle-local_qeupgradehelper.git local/qeupgradehelper
+Then add /local/qeupgradehelper to your git ignore.
+
+Alternatively, download the zip from
+    https://github.com/timhunt/moodle-local_qeupgradehelper/zipball/master
+unzip it into the local folder, and then rename the new folder to qeupgradehelper.
