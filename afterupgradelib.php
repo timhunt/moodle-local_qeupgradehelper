@@ -25,9 +25,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-require_once($CFG->dirroot . '/question/engine/upgrade/upgradelib.php');
-
+require_once(dirname(__FILE__).'/../../question/engine/upgrade/upgradelib.php');
 
 class local_qeupgradehelper_attempt_upgrader extends question_engine_attempt_upgrader {
     public $quizid;
