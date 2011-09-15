@@ -48,11 +48,15 @@ function local_qeupgradehelper_cron() {
  * This function does the cron process within the time range according to settings.
  */
 function local_qeupgradehelper_process($settings) {
+    global $CFG;
     require_once(dirname(__FILE__) . '/locallib.php');
+
     if (!local_qeupgradehelper_is_upgraded()) {
         mtrace('qeupgradehelper: site not yet upgraded. Doing nothing.');
         return;
     }
+
+    require_once(dirname(__FILE__) . '/afterupgradelib.php');
 
     $hour = (int) date('H');
     if ($hour < $settings->starthour || $hour >= $settings->stophour) {
@@ -62,23 +66,27 @@ function local_qeupgradehelper_process($settings) {
     }
 
     $stoptime = time() + $settings->procesingtime;
-    if (local_qeupgradehelper_is_upgraded()) {
-        require_once(dirname(__FILE__).'/afterupgradelib.php');
-    }
+
+    mtrace('qeupgradehelper: processing ...');
     while (time() < $stoptime) {
-        mtrace('qeupgradehelper: processing ...');
+
         $quiz = local_qeupgradehelper_get_quiz_for_upgrade();
         if ($quiz) {
-            $quizid = $quiz->id;
-            $quizsummary = local_qeupgradehelper_get_quiz($quizid);
-            if ($quizsummary) {
-                $upgrader = new local_qeupgradehelper_attempt_upgrader(
-                $quizsummary->id, $quizsummary->numtoconvert);
-                $upgrader->convert_all_quiz_attempts();
-            }
+            mtrace('qeupgradehelper: No more quizzes to process. You should probably disable the qeupgradehelper cron settings now.');
+            break; // No more to do;
         }
-        // TODO
-        mtrace('qeupgradehelper: Done.');
-        return;
+
+        $quizid = $quiz->id;
+        $quizsummary = local_qeupgradehelper_get_quiz($quizid);
+        if ($quizsummary) {
+            mtrace('  starting upgrage of attempts at quiz ' . $quizid);
+            $upgrader = new local_qeupgradehelper_attempt_upgrader(
+                    $quizsummary->id, $quizsummary->numtoconvert);
+            $upgrader->convert_all_quiz_attempts();
+            mtrace('  upgrage of quiz ' . $quizid . ' complete.');
+        }
     }
+
+    mtrace('qeupgradehelper: Done.');
+    return;
 }
